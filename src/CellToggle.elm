@@ -1,23 +1,22 @@
-module CellToggle exposing (toggle)
+module CellToggle exposing (isToggled, toggle)
 
 import Array
 
 
+isToggled grid x y =
+    getCell (getRow grid x) y
+
+
+invert grid x y =
+    not (isToggled grid x y)
+
+
 toggle grid x y =
     let
-        r =
-            getRow grid x
-
-        c =
-            getCell r y
-
-        r2 =
-            Array.set y (not c) r
-
-        grid2 =
-            Array.set x r2 grid
+        row =
+            Array.set y (invert grid x y) (getRow grid x)
     in
-    grid2
+    Array.set x row grid
 
 
 getRow arr pos =
