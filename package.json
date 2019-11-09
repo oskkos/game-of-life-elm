@@ -1,0 +1,23 @@
+{
+  "name": "game-of-life-elm",
+  "version": "1.0.0",
+  "description": "`elm make src/GameOfLife.elm --output=build.js`",
+  "main": "build.js",
+  "scripts": {
+    "build": "elm-format src/GameOfLife.elm --yes && elm make src/GameOfLife.elm --output=build.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oskkos/game-of-life-elm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oskkos/game-of-life-elm/issues"
+  },
+  "homepage": "https://github.com/oskkos/game-of-life-elm#readme",
+  "devDependencies": {
+    "elm-format": "^0.8.2"
+  }
+}

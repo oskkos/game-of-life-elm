@@ -3,7 +3,7 @@ module GameOfLife exposing (main)
 import Array exposing (Array)
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 
 
@@ -20,12 +20,12 @@ cell rowIndex cellIndex val =
         cls =
             case val of
                 True ->
-                    "success"
+                    "bg-primary"
 
                 False ->
-                    "danger"
+                    ""
     in
-    td [ class cls, onClick (Toggle rowIndex cellIndex) ] [ text (String.fromInt rowIndex ++ "-" ++ String.fromInt cellIndex) ]
+    td [ class cls, style "width" "20px", style "height" "20px", onClick (Toggle rowIndex cellIndex) ] []
 
 
 mapAt grid x y =
@@ -82,17 +82,24 @@ initialModel =
 
 view : Model -> Html Msg
 view model =
-    table [ class "table table-bordered table-condensed" ] [ tbody [] (rows model.grid) ]
+    div []
+        [ table [ class "table table-bordered table-condensed", style "width" "initial" ] [ tbody [] (rows model.grid) ]
+        , button [ onClick Reset ] [ text "Reset" ]
+        ]
 
 
 type Msg
     = Toggle Int Int
+    | Reset
 
 
 update msg model =
     case msg of
         Toggle x y ->
             { model | grid = mapAt model.grid x y }
+
+        Reset ->
+            initialModel
 
 
 main =
