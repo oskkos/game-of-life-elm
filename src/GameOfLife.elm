@@ -1,5 +1,6 @@
 module GameOfLife exposing (main)
 
+import Array exposing (Array)
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -7,11 +8,11 @@ import Html.Events exposing (onClick)
 
 
 rows grid =
-    List.indexedMap (\index row -> tr [] (cells index row)) grid
+    Array.toList (Array.indexedMap (\index row -> tr [] (cells index row)) grid)
 
 
 cells rowIndex row =
-    List.indexedMap (\cellIndex val -> cell rowIndex cellIndex val) row
+    Array.toList (Array.indexedMap (\cellIndex val -> cell rowIndex cellIndex val) row)
 
 
 cell rowIndex cellIndex val =
@@ -24,17 +25,58 @@ cell rowIndex cellIndex val =
                 False ->
                     "danger"
     in
-    td [ class cls ]
-        [ button [ class "btn", class ("btn-" ++ cls), onClick { description = "ClickedBox", row = rowIndex, col = cellIndex, val = not val } ] [ text (String.fromInt rowIndex ++ "-" ++ String.fromInt cellIndex) ]
-        ]
+    td [ class cls, onClick (Toggle rowIndex cellIndex) ] [ text (String.fromInt rowIndex ++ "-" ++ String.fromInt cellIndex) ]
+
+
+mapAt grid x y =
+    let
+        r =
+            getRow grid x
+
+        c =
+            getCell r y
+
+        r2 =
+            Array.set y (not c) r
+
+        grid2 =
+            Array.set x r2 grid
+    in
+    grid2
+
+
+getRow arr pos =
+    let
+        row =
+            case Array.get pos arr of
+                Just a ->
+                    a
+
+                Nothing ->
+                    Array.fromList []
+    in
+    row
+
+
+getCell arr pos =
+    let
+        cellValue =
+            case Array.get pos arr of
+                Just a ->
+                    a
+
+                Nothing ->
+                    False
+    in
+    cellValue
 
 
 type alias Model =
-    { grid : List (List Bool) }
+    { grid : Array (Array Bool) }
 
 
 initialModel =
-    { grid = List.repeat 20 (List.repeat 20 False)
+    { grid = Array.repeat 20 (Array.repeat 30 False)
     }
 
 
@@ -43,20 +85,14 @@ view model =
     table [ class "table table-bordered table-condensed" ] [ tbody [] (rows model.grid) ]
 
 
-type alias Msg =
-    { description : String
-    , row : Int
-    , col : Int
-    , val : Bool
-    }
+type Msg
+    = Toggle Int Int
 
 
 update msg model =
-    if msg.description == "ClickedBox" then
-        { model | grid = List.repeat 20 (List.repeat 20 True) }
-
-    else
-        model
+    case msg of
+        Toggle x y ->
+            { model | grid = mapAt model.grid x y }
 
 
 main =
