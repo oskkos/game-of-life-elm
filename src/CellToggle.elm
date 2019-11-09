@@ -1,4 +1,4 @@
-module CellToggle exposing (isToggled, toggle)
+module CellToggle exposing (getRow, isToggled, toggle)
 
 import Array
 

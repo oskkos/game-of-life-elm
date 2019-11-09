@@ -6,6 +6,7 @@ import CellToggle exposing (toggle)
 import Html exposing (..)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
+import NextTick exposing (tick)
 
 
 rows grid =
@@ -62,7 +63,7 @@ update msg model =
             initialModel
 
         NextTick ->
-            { model | grid = toggle model.grid 0 0 }
+            { model | grid = tick model.grid }
 
 
 main =
