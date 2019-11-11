@@ -1,30 +1,35 @@
-module CellToggle exposing (CellState(..), getRow, toggle)
+module CellToggle exposing (CellState(..), getRow, isAlive, setCell, toggle)
 
 import Array exposing (Array)
+
+
 type CellState
     = Dead
     | Alive
 
-getCellState : Array (Array CellState) -> Int -> Int -> CellState
-getCellState grid x y =
-    getCell (getRow grid x) y
 
+isAlive : Array (Array CellState) -> Int -> Int -> Bool
+isAlive grid x y =
+    case getCell (getRow grid x) y of
+        Alive ->
+            True
 
-invert : Array (Array CellState) -> Int -> Int -> CellState
-invert grid x y =
-    let
-        state =
-            getCellState grid x y
-    in
-    if (state == Dead) then
-        Alive
-    else
-        Dead
+        Dead ->
+            False
+
 
 toggle grid x y =
+    if isAlive grid x y then
+        setCell grid x y Dead
+
+    else
+        setCell grid x y Alive
+
+
+setCell grid x y state =
     let
         row =
-            Array.set y (invert grid x y) (getRow grid x)
+            Array.set y state (getRow grid x)
     in
     Array.set x row grid
 

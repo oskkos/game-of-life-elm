@@ -2,7 +2,7 @@ module GameOfLife exposing (main)
 
 import Array exposing (Array)
 import Browser
-import CellToggle exposing (toggle, CellState(..))
+import CellToggle exposing (CellState(..), toggle)
 import Html exposing (..)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
@@ -17,7 +17,7 @@ cells rowIndex row =
     Array.toList (Array.indexedMap (\cellIndex val -> cell rowIndex cellIndex val) row)
 
 
-cell: Int -> Int -> CellState -> Html Msg
+cell : Int -> Int -> CellState -> Html Msg
 cell rowIndex cellIndex val =
     let
         cls =
