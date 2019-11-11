@@ -2,7 +2,7 @@ module GameOfLife exposing (main)
 
 import Array exposing (Array)
 import Browser
-import CellToggle exposing (toggle)
+import CellToggle exposing (toggle, CellState(..))
 import Html exposing (..)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
@@ -17,25 +17,26 @@ cells rowIndex row =
     Array.toList (Array.indexedMap (\cellIndex val -> cell rowIndex cellIndex val) row)
 
 
+cell: Int -> Int -> CellState -> Html Msg
 cell rowIndex cellIndex val =
     let
         cls =
             case val of
-                True ->
+                Alive ->
                     "bg-primary"
 
-                False ->
+                Dead ->
                     ""
     in
     td [ class cls, style "width" "20px", style "height" "20px", onClick (Toggle rowIndex cellIndex) ] []
 
 
 type alias Model =
-    { grid : Array (Array Bool) }
+    { grid : Array (Array CellState) }
 
 
 initialModel =
-    { grid = Array.repeat 20 (Array.repeat 30 False)
+    { grid = Array.repeat 20 (Array.repeat 30 Dead)
     }
 
 

@@ -22,8 +22,10 @@ tickRow grid x rows cells =
     else
         grid
 
+
 tickCell grid x y cells =
     if y < cells then
-        tickCell (toggle grid x y) x (y+1) cells
+        tickCell (toggle grid x y) x (y + 1) cells
+
     else
         grid

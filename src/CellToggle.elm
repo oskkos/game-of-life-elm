@@ -1,15 +1,25 @@
-module CellToggle exposing (getRow, isToggled, toggle)
+module CellToggle exposing (CellState(..), getRow, toggle)
 
-import Array
+import Array exposing (Array)
+type CellState
+    = Dead
+    | Alive
 
-
-isToggled grid x y =
+getCellState : Array (Array CellState) -> Int -> Int -> CellState
+getCellState grid x y =
     getCell (getRow grid x) y
 
 
+invert : Array (Array CellState) -> Int -> Int -> CellState
 invert grid x y =
-    not (isToggled grid x y)
-
+    let
+        state =
+            getCellState grid x y
+    in
+    if (state == Dead) then
+        Alive
+    else
+        Dead
 
 toggle grid x y =
     let
@@ -32,6 +42,7 @@ getRow arr pos =
     row
 
 
+getCell : Array CellState -> Int -> CellState
 getCell arr pos =
     let
         cellValue =
@@ -40,6 +51,6 @@ getCell arr pos =
                     a
 
                 Nothing ->
-                    False
+                    Dead
     in
     cellValue
