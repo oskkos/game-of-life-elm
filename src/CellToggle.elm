@@ -1,16 +1,12 @@
-module CellToggle exposing (CellState(..), getRow, isAlive, setCell, toggle)
+module CellToggle exposing (isAlive, toggle)
 
 import Array exposing (Array)
+import Types exposing (CellState(..), Grid, Row)
 
 
-type CellState
-    = Dead
-    | Alive
-
-
-isAlive : Array (Array CellState) -> Int -> Int -> Bool
-isAlive grid x y =
-    case getCell (getRow grid x) y of
+isAlive : Grid -> Int -> Int -> Bool
+isAlive grid row cell =
+    case getState grid row cell of
         Alive ->
             True
 
@@ -18,44 +14,39 @@ isAlive grid x y =
             False
 
 
-toggle grid x y =
-    if isAlive grid x y then
-        setCell grid x y Dead
+toggle : Grid -> Int -> Int -> Grid
+toggle grid row cell =
+    if isAlive grid row cell then
+        setState grid row cell Dead
 
     else
-        setCell grid x y Alive
+        setState grid row cell Alive
 
 
-setCell grid x y state =
+getRow : Grid -> Int -> Row
+getRow grid row =
+    case Array.get row grid of
+        Just a ->
+            a
+
+        Nothing ->
+            Array.fromList []
+
+
+getState : Grid -> Int -> Int -> CellState
+getState grid row cell =
+    case Array.get cell (getRow grid row) of
+        Just a ->
+            a
+
+        Nothing ->
+            Dead
+
+
+setState : Grid -> Int -> Int -> CellState -> Grid
+setState grid row cell state =
     let
-        row =
-            Array.set y state (getRow grid x)
+        newRowArray =
+            Array.set cell state (getRow grid row)
     in
-    Array.set x row grid
-
-
-getRow arr pos =
-    let
-        row =
-            case Array.get pos arr of
-                Just a ->
-                    a
-
-                Nothing ->
-                    Array.fromList []
-    in
-    row
-
-
-getCell : Array CellState -> Int -> CellState
-getCell arr pos =
-    let
-        cellValue =
-            case Array.get pos arr of
-                Just a ->
-                    a
-
-                Nothing ->
-                    Dead
-    in
-    cellValue
+    Array.set row newRowArray grid

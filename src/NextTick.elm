@@ -1,11 +1,8 @@
 module NextTick exposing (tick)
 
 import Array exposing (Array)
-import CellToggle exposing (CellState(..), isAlive)
-
-
-type alias Grid =
-    Array (Array CellState)
+import CellToggle exposing (isAlive)
+import Types exposing (CellState(..), Grid, Row)
 
 
 tick : Grid -> Grid
@@ -13,7 +10,7 @@ tick grid =
     Array.indexedMap (tickRow grid (Array.length grid)) grid
 
 
-tickRow : Grid -> Int -> Int -> Array CellState -> Array CellState
+tickRow : Grid -> Int -> Int -> Row -> Row
 tickRow grid rowCount rowNum row =
     Array.indexedMap (tickCell grid rowCount (Array.length row) rowNum) row
 
