@@ -1,67 +1,53 @@
 module NextTick exposing (tick)
 
-import Array
-import CellToggle exposing (CellState(..), getRow, isAlive, setCell)
+import Array exposing (Array)
+import CellToggle exposing (CellState(..), isAlive)
+import GameOfLife exposing (Grid)
 
-
+tick: Grid -> Grid
 tick grid =
     let
-        rows =
-            Array.length grid
-
-        cells =
-            Array.length (getRow grid 0)
+        tickRowForGrid = tickRow grid (Array.length grid)
     in
-    tickRow grid grid 0 rows cells
+    Array.indexedMap tickRowForGrid grid
+
+tickRow: Grid -> Int -> Int -> Array CellState -> Array CellState
+tickRow grid rowCount rowNum row =
+    let
+        tickCellForGrid = tickCell grid rowCount (Array.length row) rowNum
+    in
+
+    Array.indexedMap tickCellForGrid row
 
 
-tickRow oldgrid newgrid x rows cells =
-    if x < rows then
-        tickRow oldgrid (tickCell oldgrid newgrid x 0 rows cells) (x + 1) rows cells
-
-    else
-        newgrid
-
-
-tickCell oldgrid newgrid x y rows cells =
-    if y < cells then
-        let
-            newgrid2 =
-                setCell newgrid x y (getNewState oldgrid x y rows cells)
-        in
-        tickCell oldgrid newgrid2 x (y + 1) rows cells
-
-    else
-        newgrid
-
-
-getNewState grid x y rows cells =
+tickRow: Grid -> Int -> Int -> Int -> Int -> CellState -> CellState
+tickCell grid rowCount cellCount rowNum cellNum cellState =
     let
         neighbours =
-            countAliveNeighbours grid x y rows cells
+            countAliveNeighbours grid rowNum cellNum rowCount cellCount
     in
     -- Solu muuttuu eläväksi, jos sen naapureista tasan kolme on eläviä.
     -- Solu pysyy elävänä, jos sen naapureista tasan 2 tai 3 on eläviä. Muuten solu kuolee.
-    if (isAlive grid x y == False) && (neighbours == 3) then
+    if (cellState == Dead) && (neighbours == 3) then
         Alive
 
-    else if isAlive grid x y && (neighbours == 2 || neighbours == 3) then
+    else if (cellState == Alive) && (neighbours == 2 || neighbours == 3) then
         Alive
 
     else
         Dead
 
 
-countAliveNeighbours grid x y rows cells =
+countAliveNeighbours grid rowNum cellNum rowCount cellCount =
     List.length
         (List.filter (\a -> a)
-            [ isAlive grid (modBy rows (x - 1)) (modBy cells (y - 1))
-            , isAlive grid (modBy rows (x - 1)) (modBy cells y)
-            , isAlive grid (modBy rows (x - 1)) (modBy cells (y + 1))
-            , isAlive grid (modBy rows x) (modBy cells (y - 1))
-            , isAlive grid (modBy rows x) (modBy cells (y + 1))
-            , isAlive grid (modBy rows (x + 1)) (modBy cells (y - 1))
-            , isAlive grid (modBy rows (x + 1)) (modBy cells y)
-            , isAlive grid (modBy rows (x + 1)) (modBy cells (y + 1))
+            [ isAlive grid (modBy rowCount (rowNum - 1)) (modBy cellCount (cellNum - 1))
+            , isAlive grid (modBy rowCount (rowNum - 1)) (modBy cellCount cellNum)
+            , isAlive grid (modBy rowCount (rowNum - 1)) (modBy cellCount (cellNum + 1))
+            , isAlive grid (modBy rowCount rowNum) (modBy cellCount (cellNum - 1))
+            , isAlive grid (modBy rowCount rowNum) (modBy cellCount (cellNum + 1))
+            , isAlive grid (modBy rowCount (rowNum + 1)) (modBy cellCount (cellNum - 1))
+            , isAlive grid (modBy rowCount (rowNum + 1)) (modBy cellCount cellNum)
+            , isAlive grid (modBy rowCount (rowNum + 1)) (modBy cellCount (cellNum + 1))
             ]
         )
