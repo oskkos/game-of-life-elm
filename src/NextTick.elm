@@ -2,32 +2,31 @@ module NextTick exposing (tick)
 
 import Array exposing (Array)
 import CellToggle exposing (CellState(..), isAlive)
-import GameOfLife exposing (Grid)
 
-tick: Grid -> Grid
+
+type alias Grid =
+    Array (Array CellState)
+
+
+tick : Grid -> Grid
 tick grid =
-    let
-        tickRowForGrid = tickRow grid (Array.length grid)
-    in
-    Array.indexedMap tickRowForGrid grid
+    Array.indexedMap (tickRow grid (Array.length grid)) grid
 
-tickRow: Grid -> Int -> Int -> Array CellState -> Array CellState
+
+tickRow : Grid -> Int -> Int -> Array CellState -> Array CellState
 tickRow grid rowCount rowNum row =
-    let
-        tickCellForGrid = tickCell grid rowCount (Array.length row) rowNum
-    in
-
-    Array.indexedMap tickCellForGrid row
+    Array.indexedMap (tickCell grid rowCount (Array.length row) rowNum) row
 
 
-tickRow: Grid -> Int -> Int -> Int -> Int -> CellState -> CellState
+tickCell : Grid -> Int -> Int -> Int -> Int -> CellState -> CellState
 tickCell grid rowCount cellCount rowNum cellNum cellState =
     let
         neighbours =
             countAliveNeighbours grid rowNum cellNum rowCount cellCount
     in
-    -- Solu muuttuu eläväksi, jos sen naapureista tasan kolme on eläviä.
-    -- Solu pysyy elävänä, jos sen naapureista tasan 2 tai 3 on eläviä. Muuten solu kuolee.
+    -- Any live cell with two or three neighbors survives.
+    -- Any dead cell with three live neighbors becomes a live cell.
+    -- All other live cells die in the next generation. Similarly, all other dead cells stay dead.
     if (cellState == Dead) && (neighbours == 3) then
         Alive
 

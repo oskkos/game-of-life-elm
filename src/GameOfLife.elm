@@ -1,4 +1,4 @@
-module GameOfLife exposing (main, Grid)
+module GameOfLife exposing (main)
 
 import Array exposing (Array)
 import Browser
@@ -30,9 +30,9 @@ cell rowIndex cellIndex val =
     in
     td [ class cls, style "width" "20px", style "height" "20px", onClick (Toggle rowIndex cellIndex) ] []
 
-type alias Grid = Array (Array CellState)
+
 type alias Model =
-    { grid : Grid }
+    { grid : Array (Array CellState) }
 
 
 initialModel =
