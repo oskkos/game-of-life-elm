@@ -11,11 +11,15 @@ import Time
 
 
 rows grid =
-    Array.toList (Array.indexedMap (\index row -> tr [] (cells index row)) grid)
+    grid
+        |> Array.indexedMap (\index row -> tr [] (cells index row))
+        |> Array.toList
 
 
 cells rowIndex row =
-    Array.toList (Array.indexedMap (\cellIndex val -> cell rowIndex cellIndex val) row)
+    row
+        |> Array.indexedMap (\cellIndex val -> cell rowIndex cellIndex val)
+        |> Array.toList
 
 
 cell : Int -> Int -> CellState -> Html Msg
@@ -33,7 +37,7 @@ cell rowIndex cellIndex val =
 
 
 type alias Model =
-    { grid : Array (Array CellState), running : Bool, speed: Int }
+    { grid : Array (Array CellState), running : Bool, speed : Int }
 
 
 initialModel =
@@ -41,6 +45,11 @@ initialModel =
     , running = False
     , speed = 100
     }
+
+
+speedToggle : String -> Msg
+speedToggle val =
+    ToggleSpeed (Maybe.withDefault 100 (String.toInt val))
 
 
 view : Model -> Html Msg
@@ -59,8 +68,15 @@ view model =
         , button [ class "btn btn-primary", onClick Reset ] [ text "Reset" ]
         , button [ class "btn btn-primary", onClick NextTick ] [ text "Next" ]
         , button [ class "btn btn-primary", onClick ToggleRunning ] [ text runningLabel ]
-        , span [ style "padding" "5px"] [ text "Speed:"]
-        , input [ class "form-control-inline", style "width" "50px", type_ "number", onInput (ToggleSpeed << Maybe.withDefault 100 << String.toInt), value (String.fromInt model.speed)] []
+        , span [ style "padding" "5px" ] [ text "Speed:" ]
+        , input
+            [ class "form-control-inline"
+            , style "width" "50px"
+            , type_ "number"
+            , onInput speedToggle
+            , value (String.fromInt model.speed)
+            ]
+            []
         ]
 
 
@@ -85,6 +101,7 @@ update msg model =
 
         ToggleRunning ->
             ( { model | running = not model.running }, Cmd.none )
+
         ToggleSpeed x ->
             ( { model | speed = x }, Cmd.none )
 
