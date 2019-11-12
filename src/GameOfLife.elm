@@ -7,8 +7,17 @@ import Html exposing (..)
 import Html.Attributes exposing (class, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import NextTick exposing (tick)
+import Random
 import Time
 import Types exposing (CellState(..), Grid, Row)
+
+
+rowCount =
+    20
+
+
+colCount =
+    30
 
 
 
@@ -34,7 +43,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( Model (Array.repeat 20 (Array.repeat 30 Dead)) False 100
+    ( Model (Array.repeat rowCount (Array.repeat colCount Dead)) False 100
     , Cmd.none
     )
 
@@ -49,6 +58,8 @@ type Msg
     | NextTick
     | ToggleRunning
     | ToggleSpeed Int
+    | RandomStart
+    | RandomInit (List (List CellState))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -68,6 +79,12 @@ update msg model =
 
         ToggleSpeed x ->
             ( { model | speed = x }, Cmd.none )
+
+        RandomStart ->
+            ( model, Random.generate RandomInit (Random.list rowCount (Random.list colCount (Random.weighted ( 70, Dead ) [ ( 30, Alive ) ]))) )
+
+        RandomInit data ->
+            ( { model | grid = Array.fromList (List.map (\l -> Array.fromList l) data) }, Cmd.none )
 
 
 
@@ -100,6 +117,7 @@ view model =
     in
     div []
         [ table [ class "table table-bordered table-condensed", style "width" "initial" ] [ tbody [] (rows model.grid) ]
+        , button [ class "btn btn-primary", onClick RandomStart ] [ text "Random" ]
         , button [ class "btn btn-primary", onClick Reset ] [ text "Reset" ]
         , button [ class "btn btn-primary", onClick NextTick ] [ text "Next" ]
         , button [ class "btn btn-primary", onClick ToggleRunning ] [ text runningLabel ]
