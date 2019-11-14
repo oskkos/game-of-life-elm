@@ -1,4 +1,4 @@
-# Game of Lif in Elm
+# Game of Life in Elm
 
 See [Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) for more info of the game.
 
